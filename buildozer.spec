@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = ShowCase
+title = 8move
 
 # (str) Package name
-package.name = myapp
+package.name = krl
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.test
@@ -35,8 +35,8 @@ version = 0.1
 # version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
-# comma seperated e.g. requirements = sqlite3,kivy
-requirements = kivy==1.10.1,python3crystax==3.5,pygments
+# comma seperated e.g. requirements = sqlite3,kivy,pygments
+requirements = kivy==1.10.1,python3crystax==3.5
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
