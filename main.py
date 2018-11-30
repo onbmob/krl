@@ -36,16 +36,16 @@ from kivy.animation import Animation
 from kivy.uix.screenmanager import Screen
 
 
-class ShowcaseScreen(Screen):
+class KrlScreen(Screen):
     fullscreen = BooleanProperty(False)
 
     def add_widget(self, *args):
         if 'content' in self.ids:
             return self.ids.content.add_widget(*args)
-        return super(ShowcaseScreen, self).add_widget(*args)
+        return super(KrlScreen, self).add_widget(*args)
 
 
-class ShowcaseApp(App):
+class KrlApp(App):
 
     index = NumericProperty(-1)
     current_title = StringProperty()
@@ -56,15 +56,19 @@ class ShowcaseApp(App):
     hierarchy = ListProperty([])
 
     def build(self):
-        self.title = 'hello world'
+        self.title = '8move'
         Clock.schedule_interval(self._update_clock, 1 / 60.)
         self.screens = {}
         self.available_screens = sorted([
-            'Buttons', 'ToggleButton', 'Sliders', 'ProgressBar', 'Switches',
-            'CheckBoxes', 'TextInputs', 'Accordions', 'FileChoosers',
-            'Carousel', 'Bubbles', 'CodeInput', 'DropDown', 'Spinner',
-            'Scatter', 'Splitter', 'TabbedPanel + Layouts', 'RstDocument',
-            'Popups', 'ScreenManager'])
+            'Buttons',
+            # 'ToggleButton', 'Sliders', 'ProgressBar', 'Switches',
+            # 'CheckBoxes',
+            'TextInputs'
+            # 'Accordions', 'FileChoosers',
+            # 'Carousel', 'Bubbles', 'CodeInput', 'DropDown', 'Spinner',
+            # 'Scatter', 'Splitter', 'TabbedPanel + Layouts', 'RstDocument',
+            # 'Popups', 'ScreenManager'
+        ])
         self.screen_names = self.available_screens
         curdir = dirname(__file__)
         self.available_screens = [join(curdir, 'data', 'screens',
@@ -236,4 +240,11 @@ Button:
 
 
 if __name__ == '__main__':
-    ShowcaseApp().run()
+    # from kivy.core.window import Window
+    # Window.fullscreen = False
+    # from kivy.config import Config
+    # Config.set('graphics','show_cursor','1')
+    # Config.set('graphics', 'fullscreen', '0')
+    # Config.write()
+
+    KrlApp().run()
