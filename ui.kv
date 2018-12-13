@@ -1,0 +1,141 @@
+<ManagerScreens@ScreenManager>:
+    MenuScreen:
+        id: men
+
+    SortedListRoute:
+        id: list_routs
+
+    AddFood:
+        id: add_food
+
+    Entry:
+        id: entry
+
+
+<MenuScreen@Screen>:
+    name: "menu"
+    _app: app
+    canvas:
+#        Color:
+#            rgba: 255, 0, 0, 1
+        Rectangle:
+#            pos: self.pos
+            size: self.size
+            source: 'data/logo.png'
+
+
+    BoxLayout:
+        orientation: 'vertical'
+        size: self.size
+
+        Button:
+            text: "Авторизация"
+            on_release: app.screen_manager.current = 'entry'
+            size_hint_y: None
+            height: dp(40)
+#            width: dp(40)
+#            padding: 20,20
+
+        Button:
+            text: "Работа"
+            on_release: app.screen_manager.current = 'list_routs'
+            size_hint_y: None
+            height: dp(40)
+
+        Label:
+#            text: 'My label'
+#            color: 255, 0, 255, 1
+#            size_hint_y: None
+
+
+<Entry>:
+    name: "entry"
+    _app: app
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        Button:
+            text: '< Назад'
+            on_press: app.screen_manager.current = 'menu'
+            size_hint_y: None
+            height: dp(40)
+
+        TextInput:
+            id: field_phone
+            multiline: False
+            height: dp(40)
+            size_hint_y: None
+            hint_text: "Введите телефон 380...."
+
+        Button:
+            text: "Проверить"
+            size_hint_y: None
+            height: dp(40)
+            on_press:
+                if field_phone.text != '': root.button_clicked(field_phone.text); \
+                phone_label.text = field_phone.text
+
+        Label:
+            id: phone_label
+
+        Label:
+            id: result_label
+
+
+<SortedListRoute>:
+    name: "list_routs"
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        Button:
+            text: '< Назад'
+            on_press: app.screen_manager.current = 'menu'
+            size_hint_y: None
+            height: dp(40)
+
+        RecycleView:
+            id: rv
+            key_viewclass: 'viewclass'
+            key_size: 'height'
+
+            RecycleBoxLayout:
+                default_size: None, dp(40)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+
+
+<AddFood>:
+    name: "add_food"
+    _app: app
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+
+        Button:
+            text: '< Возврат'
+            on_press: app.screen_manager.current = 'menu'
+            size_hint_y: None
+            height: dp(40)
+        TextInput:
+            id: field_food
+            multiline: False
+            height: dp(40)
+            size_hint_y: None
+            hint_text: "Название"
+
+        Button:
+            text: "Добавить"
+            size_hint_y: None
+            height: dp(40)
+            on_press:
+                if field_food.text != '': root.button_clicked(field_food.text); \
+                field_food.text = ''
+
+        Label:
+            id: result_label
+
