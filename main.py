@@ -17,6 +17,8 @@ from kivy.network.urlrequest import UrlRequest
 
 # if not PY2:
 Builder.load_string(open('ui.kv', encoding='utf-8').read())
+
+
 # else:
 # Builder.load_file('ui.kv')
 
@@ -32,9 +34,11 @@ class Entry(Screen):
     _app = ObjectProperty()
 
     def button_clicked(self, input_phone):
-        req = UrlRequest('https://8move.com//api/check_phone/380675737597/?send_sms=true')
+        print('1'+input_phone)
+        req = UrlRequest('https://8move.com/api/check_phone/380675737597/?send_sms=true')
         # req = UrlRequest('https://8move.com//api/check_phone/'+input_phone+'/?send_sms=true')
         req.wait()
+        print('2')
 
         self.ids.result_label.text = "Get:  " + req.result['result']
 
@@ -45,19 +49,21 @@ class Entry(Screen):
         self._app.config.set('General', 'user_data', self._app.check_phone)
         self._app.config.write()
 
-class SortedListRoute(Screen):
-    def on_enter(self):
-        data_foods = ast.literal_eval(
-            App.get_running_app().config.get('General', 'user_data'))
-        self.set_list_foods(data_foods)
 
-    def set_list_foods(self, data_foods):
-        for f, d in sorted(data_foods.items(), key=lambda x: x[1]):
-            fd = f.decode('u8') + ' ' + (datetime.fromtimestamp(d).strftime(
-                '%Y-%m-%d'))
-            data = {'viewclass': 'Button', 'text': fd}
-            if data not in self.ids.rv.data:
-                self.ids.rv.data.append({'viewclass': 'Button', 'text': fd})
+class SortedListRoute(Screen):
+    pass
+    # def on_enter(self):
+    #     data_foods = ast.literal_eval(
+    #         App.get_running_app().config.get('General', 'user_data'))
+    #     self.set_list_foods(data_foods)
+
+    # def set_list_foods(self, data_foods):
+    #     for f, d in sorted(data_foods.items(), key=lambda x: x[1]):
+    #         fd = f.decode('u8') + ' ' + (datetime.fromtimestamp(d).strftime(
+    #             '%Y-%m-%d'))
+    #         data = {'viewclass': 'Button', 'text': fd}
+    #         if data not in self.ids.rv.data:
+    #             self.ids.rv.data.append({'viewclass': 'Button', 'text': fd})
 
 
 class AddFood(Screen):
@@ -73,7 +79,7 @@ class AddFood(Screen):
 
     def set_new_food(self, name_food):
         # if not PY2:
-        self.ids.result_label.text =  "Последнее добавленное:  " + name_food
+        self.ids.result_label.text = "Последнее добавленное:  " + name_food
         # else:
         #     self.ids.result_label.text = \
         #         u"Последнее добавленное:  " + name_food
@@ -101,9 +107,30 @@ class RouteListApp(App):
         self.user_data = ast.literal_eval(self.config.get(
             'General', 'user_data'))
 
+    # def get_application_config(self, **kwargs):
+    #     return super(RouteListApp, self).get_application_config(
+    #         '{}/%(appname)s.ini'.format(self.directory))
+
     def get_application_config(self, **kwargs):
-        return super(RouteListApp, self).get_application_config(
-            '{}/%(appname)s.ini'.format(self.directory))
+        from kivy.utils import platform
+        if platform == 'android':
+            config_path = os.path.join(os.environ['ANDROID_PRIVATE'], "%(appname)s.ini")
+            return config_path
+        return super(RouteListApp, self).get_application_config('{}/%(appname)s.ini'.format(self.directory))
+
+    # def get_application_config(self, defaultpath="c:/temp/%(appname)s.ini"):
+    #     from kivy.utils import platform
+    #     from os.path import sep, expanduser
+    #
+    #     if platform == 'android':
+    #         defaultpath = '/sdcard/.%(appname)s.ini'
+    #     elif platform == 'ios':
+    #         defaultpath = '~/Documents/%(appname)s.ini'
+    #     elif platform == 'win':
+    #         defaultpath = defaultpath.replace('/', sep)
+    #
+    #     return os.path.expanduser(defaultpath) % {
+    #         'appname': self.name, 'appdir': self.directory}
 
     def build(self):
         return self.screen_manager
