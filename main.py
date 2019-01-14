@@ -30,15 +30,28 @@ Builder.load_string(open('ui.kv', encoding='utf-8').read())
 #   -----  Entry.ids.result_label.text = "Get:  " + str
 
 
+
 class Entry(Screen):
     _app = ObjectProperty()
 
     def button_clicked(self, input_phone):
-        print('1'+input_phone)
-        req = UrlRequest('https://8move.com/api/check_phone/380675737597/?send_sms=true')
+        print('1 '+input_phone)
+        # req = UrlRequest('https://8move.com/api/check_phone/380675737597/?send_sms=true')
         # req = UrlRequest('https://8move.com//api/check_phone/'+input_phone+'/?send_sms=true')
+        # req = UrlRequest('http://onbmob.com/check.txt',
+        req = UrlRequest('https://8move.com/api/check_phone/380675737597/?send_sms=true',
+                         # on_success=self.got_json,
+                         # on_error=self.error_json,
+                         # on_failure=self.error_json,
+                         # req_body={"search_text": search_text, "num_results": 1},
+                         method='GET',
+                         req_headers={'User-Agent': 'Mozilla/5.0',
+                                      'Content-Type': 'application/json'}
+                                      # 'Authorization': self._get_auth()}
+                         )
         req.wait()
-        print('2')
+        print('2 result =', req.result)
+        print('3 error =', req.error)
 
         self.ids.result_label.text = "Get:  " + req.result['result']
 
@@ -49,6 +62,19 @@ class Entry(Screen):
         self._app.config.set('General', 'user_data', self._app.check_phone)
         self._app.config.write()
 
+    def got_json(req):
+        print('2 result =', req.result)
+
+    def error_json(req):
+        print('3 error =', req.error)
+
+    # def search(self, search_text):
+    #     header = {'Content-Type': 'application/json'}
+    #     req = UrlRequest('http://127.0.0.1:5000/search',
+    #                      req_body={"search_text": search_text, "num_results": 1},
+    #                      on_success=Entry.got_json,
+    #                      req_headers=header)
+    #     print("Search method called")
 
 class SortedListRoute(Screen):
     pass
