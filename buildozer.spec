@@ -6,7 +6,9 @@ source.dir = .
 version = 0.1
 icon.filename = %(source.dir)s/data/logo.png
 source.include_exts = py,png,jpg,kv,atlas,ttf,json
-requirements = openssl, hostpython3,python3,kivy==1.10.1
+requirements = android, openssl, hostpython2, python2, kivy==1.10.1
+#requirements = openssl, hostpython3,python3,kivy==1.10.1
+#requirements = python3,kivy==1.10.1
 orientation = all
 osx.python_version = 3
 osx.kivy_version = 1.9.1

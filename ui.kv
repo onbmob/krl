@@ -73,8 +73,17 @@
             size_hint_y: None
             height: dp(40)
             on_press:
-                if field_phone.text != '': root.button_clicked(field_phone.text); \
+                print('k1====== result =Button')
+#                if field_phone.text != '': root.button_clicked(field_phone.text); \
+#                phone_label.text = field_phone.text
                 phone_label.text = field_phone.text
+                print('k2====== result =Button')
+                root.button_clicked(field_phone.text)
+                print('k3====== result =Button')
+        ProgressBar:
+            id: download_progress_bar
+            max: 1
+            value: 0
 
         Label:
             id: phone_label

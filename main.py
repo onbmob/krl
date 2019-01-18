@@ -4,23 +4,36 @@ import os
 import ast
 import time
 
-from datetime import datetime
+# from datetime import datetime
 
 from kivy.app import App
-# from kivy import PY2
+from kivy import PY2
 from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import Screen
 from kivy.config import ConfigParser
 from kivy.lang import Builder
 from kivy.factory import Factory
 from kivy.network.urlrequest import UrlRequest
+try:
+    print('1====== result =import HTTPSConnection.')
+    import ssl
+    print('2====== result =import HTTPSConnection.')
+    HTTPSConnection = None
+    print('3====== result =import HTTPSConnection.')
+    if PY2:
+        from httplib import HTTPSConnection
+    else:
+        from http.client import HTTPSConnection
+    print('4====== result =import HTTPSConnection.')
+except ImportError:
+    # depending the platform, if openssl support wasn't compiled before python,
+    # this class is not available.
+    print('====== result = HTTPSConnection is not available.')
 
-# if not PY2:
-Builder.load_string(open('ui.kv', encoding='utf-8').read())
-
-
-# else:
-# Builder.load_file('ui.kv')
+if not PY2:
+    Builder.load_string(open('ui.kv', encoding='utf-8').read())
+else:
+    Builder.load_file('ui.kv')
 
 # def got_json(req, result):
 #     str = ''
@@ -40,16 +53,24 @@ class Entry(Screen):
         # req = UrlRequest('https://8move.com//api/check_phone/'+input_phone+'/?send_sms=true')
         # req = UrlRequest('http://onbmob.com/check.txt',
         req = UrlRequest('https://8move.com/api/check_phone/380675737597/?send_sms=true',
-                         # on_success=self.got_json,
-                         # on_error=self.error_json,
-                         # on_failure=self.error_json,
+                         on_success=self.got_json,
+                         on_error=self.error_json,
+                         on_failure=self.error_json,
+                         on_progress=self.update_progress,
                          # req_body={"search_text": search_text, "num_results": 1},
                          method='GET',
                          req_headers={'User-Agent': 'Mozilla/5.0',
                                       'Content-Type': 'application/json'}
                                       # 'Authorization': self._get_auth()}
+        # headers = {'Token': 'tArcrKZYxRTCWPvhTcdBqyydHZnxLCJB'}
                          )
-        req.wait()
+        # req.wait()
+
+    def update_progress(self, request, current_size, total_size):
+        self.ids['download_progress_bar'].value = current_size / total_size
+
+    def got_json(self, req, result):
+        # print('2 result =', req.result)
         print('2 result =', req.result)
         print('3 error =', req.error)
 
@@ -62,10 +83,8 @@ class Entry(Screen):
         self._app.config.set('General', 'user_data', self._app.check_phone)
         self._app.config.write()
 
-    def got_json(req):
-        print('2 result =', req.result)
 
-    def error_json(req):
+    def error_json(self, req, result):
         print('3 error =', req.error)
 
     # def search(self, search_text):
