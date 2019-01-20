@@ -47,8 +47,8 @@ else:
 class Entry(Screen):
     _app = ObjectProperty()
 
-    def button_clicked(self, input_phone):
-        print('1 '+input_phone)
+    def button_clicked(self):
+        print('1 ')
         # req = UrlRequest('https://8move.com/api/check_phone/380675737597/?send_sms=true')
         # req = UrlRequest('https://8move.com//api/check_phone/'+input_phone+'/?send_sms=true')
         # req = UrlRequest('http://onbmob.com/check.txt',
