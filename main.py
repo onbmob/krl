@@ -4,7 +4,7 @@ import os
 import ast
 import time
 
-# from datetime import datetime
+from datetime import datetime
 
 from kivy.app import App
 from kivy import PY2
@@ -15,20 +15,16 @@ from kivy.lang import Builder
 from kivy.factory import Factory
 from kivy.network.urlrequest import UrlRequest
 try:
-    print('1====== result =import HTTPSConnection.')
     import ssl
-    print('2====== result =import HTTPSConnection.')
     HTTPSConnection = None
-    print('3====== result =import HTTPSConnection.')
     if PY2:
         from httplib import HTTPSConnection
     else:
         from http.client import HTTPSConnection
-    print('4====== result =import HTTPSConnection.')
 except ImportError:
     # depending the platform, if openssl support wasn't compiled before python,
     # this class is not available.
-    print('====== result = HTTPSConnection is not available.')
+    print('= error = HTTPSConnection is not available.')
 
 if not PY2:
     Builder.load_string(open('ui.kv', encoding='utf-8').read())
@@ -49,9 +45,10 @@ class Entry(Screen):
 
     def button_clicked(self):
         print('1 ')
-        # req = UrlRequest('https://8move.com/api/check_phone/380675737597/?send_sms=true')
-        # req = UrlRequest('https://8move.com//api/check_phone/'+input_phone+'/?send_sms=true')
-        # req = UrlRequest('http://onbmob.com/check.txt',
+        input_phone = self.ids['field_phone'].text
+        print('1 ', input_phone)
+        self.ids['phone_label'].text = u"Телефон:  " + input_phone
+        # req = UrlRequest('https://8move.com//api/check_phone/'+input_phone+'/?send_sms=true',
         req = UrlRequest('https://8move.com/api/check_phone/380675737597/?send_sms=true',
                          on_success=self.got_json,
                          on_error=self.error_json,
@@ -70,9 +67,9 @@ class Entry(Screen):
         self.ids['download_progress_bar'].value = current_size / total_size
 
     def got_json(self, req, result):
-        # print('2 result =', req.result)
-        print('2 result =', req.result)
-        print('3 error =', req.error)
+        print('req.result =', req.result)
+        print('result =', result)
+        print('error =', req.error)
 
         self.ids.result_label.text = "Get:  " + req.result['result']
 
@@ -82,33 +79,72 @@ class Entry(Screen):
             self._app.check_phone[key] = value
         self._app.config.set('General', 'user_data', self._app.check_phone)
         self._app.config.write()
-
+        self._app.screen_manager.current = 'entry_pincode'
 
     def error_json(self, req, result):
-        print('3 error =', req.error)
+        print('error =', req.error)
 
-    # def search(self, search_text):
-    #     header = {'Content-Type': 'application/json'}
-    #     req = UrlRequest('http://127.0.0.1:5000/search',
-    #                      req_body={"search_text": search_text, "num_results": 1},
-    #                      on_success=Entry.got_json,
-    #                      req_headers=header)
-    #     print("Search method called")
+class EntryPincode(Screen):
+    _app = ObjectProperty()
+
+    def button_clicked(self):
+        print('1 ')
+        input_phone = self.ids['field_phone'].text
+        print('1 ', input_phone)
+        self.ids['phone_label'].text = u"Пинкод:  " + input_phone
+        import json
+        req_body = json.dumps({"phone": "380675737597", "pin": input_phone})
+        UrlRequest('https://8move.com/api/check_pin_auth/',
+                         on_success=self.got_json,
+                         on_error=self.error_json,
+                         on_failure=self.error_json,
+                         on_progress=self.update_progress,
+                         req_body=req_body,
+                         method='POST',
+                         req_headers={'User-Agent': 'Mozilla/5.0',
+                                      'Content-Type': 'application/json'}
+                                      # 'Authorization': self._get_auth()}
+        # headers = {'Token': 'tArcrKZYxRTCWPvhTcdBqyydHZnxLCJB'}
+                         )
+        # req.wait()
+
+    def update_progress(self, request, current_size, total_size):
+        self.ids['download_progress_bar'].value = current_size / total_size
+
+    def got_json(self, req, result):
+        print('req.result =', req.result)
+        print('result =', result)
+        print('error =', req.error)
+
+        self.ids.result_label.text = "Get:  "
+
+        self._app.check_phone = ast.literal_eval(self._app.config.get('General', 'user_data'))
+        for key, value in req.result.items():
+            print('{}: {}'.format(key, value))
+            self._app.check_phone[key] = value
+        self._app.config.set('General', 'user_data', self._app.check_phone)
+        self._app.config.write()
+        self._app.screen_manager.current = 'menu'
+
+    def error_json(self, req, result):
+        print('error =', req.error)
 
 class SortedListRoute(Screen):
-    pass
-    # def on_enter(self):
-    #     data_foods = ast.literal_eval(
-    #         App.get_running_app().config.get('General', 'user_data'))
-    #     self.set_list_foods(data_foods)
 
-    # def set_list_foods(self, data_foods):
-    #     for f, d in sorted(data_foods.items(), key=lambda x: x[1]):
-    #         fd = f.decode('u8') + ' ' + (datetime.fromtimestamp(d).strftime(
-    #             '%Y-%m-%d'))
-    #         data = {'viewclass': 'Button', 'text': fd}
-    #         if data not in self.ids.rv.data:
-    #             self.ids.rv.data.append({'viewclass': 'Button', 'text': fd})
+    def on_enter(self):
+        print ('SortedListRoute')
+        data_foods = ast.literal_eval(
+            App.get_running_app().config.get('General', 'user_data'))
+        self.set_list_foods(data_foods)
+
+    def set_list_foods(self, data_foods):
+        for f, d in sorted(data_foods.items(), key=lambda x: x[1]):
+            # fd = f.decode('u8') + ' ' + (datetime.fromtimestamp(d).strftime('%Y-%m-%d'))
+            fd = f + ' = ' + d
+            print (fd)
+            data = {'viewclass': 'Button', 'text': fd}
+            if data not in self.ids.rv.data:
+                self.ids.rv.data.append({'viewclass': 'Button', 'text': fd})
 
 
 class AddFood(Screen):

@@ -2,14 +2,17 @@
     MenuScreen:
         id: men
 
+    Entry:
+        id: entry
+
+    EntryPincode:
+        id: entry_pincode
+
     SortedListRoute:
         id: list_routs
 
     AddFood:
         id: add_food
-
-    Entry:
-        id: entry
 
 
 <MenuScreen@Screen>:
@@ -37,7 +40,7 @@
 #            padding: 20,20
 
         Button:
-            text: "Работа"
+            text: "Внутренняя память"
             on_release: app.screen_manager.current = 'list_routs'
             size_hint_y: None
             height: dp(40)
@@ -56,7 +59,7 @@
         orientation: 'vertical'
 
         Button:
-            text: '< Назад'
+            text: '< Выход'
             on_press: app.screen_manager.current = 'menu'
             size_hint_y: None
             height: dp(40)
@@ -64,22 +67,66 @@
         TextInput:
             id: field_phone
             multiline: False
+            input_type: 'number'
             height: dp(40)
             size_hint_y: None
             hint_text: "Введите телефон 380...."
 
         Button:
-            text: "Проверить"
+            text: "Проверить телефон"
             size_hint_y: None
             height: dp(40)
             on_press:
                 print('k1====== result =Button')
-#                if field_phone.text != '': root.button_clicked(field_phone.text); \
+                if field_phone.text != '': root.button_clicked()#; \
 #                phone_label.text = field_phone.text
+#                print('k2====== result =Button')
+#                root.button_clicked()
+#                print('k3====== result =Button')
+        ProgressBar:
+            id: download_progress_bar
+            max: 1
+            value: 0
+
+        Label:
+            id: phone_label
+
+        Label:
+            id: result_label
+
+<EntryPincode>:
+    name: "entry_pincode"
+    _app: app
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        Button:
+            text: '< Выход'
+            on_press: app.screen_manager.current = 'menu'
+            size_hint_y: None
+            height: dp(40)
+
+        TextInput:
+            id: field_phone
+            input_type: 'number'
+            multiline: False
+            height: dp(40)
+            size_hint_y: None
+            hint_text: "Введите пинкод"
+
+        Button:
+            text: "Проверить пинкод"
+            size_hint_y: None
+            height: dp(40)
+            on_press:
+                print('epc1====== result =Button')
+                if field_phone.text != '': root.button_clicked()
+#                if field_phone.text != '': root.button_clicked(); \
 #                phone_label.text = field_phone.text
-                print('k2====== result =Button')
-                root.button_clicked()
-                print('k3====== result =Button')
+#                print('k2====== result =Button')
+#                root.button_clicked()
+#                print('k3====== result =Button')
         ProgressBar:
             id: download_progress_bar
             max: 1
