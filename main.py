@@ -31,7 +31,6 @@ class Entry(Screen):
     _app = ObjectProperty()
 
     def button_clicked(self):
-        print('1 ')
         input_phone = self.ids['field_phone'].text
         print('1 ', input_phone)
         self.ids['phone_label'].text = u"Телефон:  " + input_phone
@@ -132,16 +131,22 @@ class EntryPincode(Screen):
         print('error =', req.error)
 
     def got_json_act(self, req, result):
-        print('check_authentication req.result =', req.result)
+        # print('check_authentication req.result =', req.result)
         print('check_authentication result =', result)
         print('check_authentication error =', req.error)
 
-        self.ids.result_label.text = u"Get:  "
+        self.ids.result_label.text = "OK"
 
         user_data = ast.literal_eval(self._app.config.get('General', 'user_data'))
-        for key, value in req.result.items():
-            print('{}: {}'.format(key, value))
-            user_data[key] = value
+        # for key, value in req.result.items():
+            # print('{}: {}'.format(key, value))
+            # user_data[key] = value.encode('utf-8')
+        user_data['first_name'] =  req.result['first_name'].encode('u8')
+        user_data['last_name'] =  req.result['last_name'].encode('u8')
+        user_data['organization'] =  req.result['organization'].encode('u8')
+        user_data['user_id'] =  req.result['user_id']
+        user_data['show_move'] =  req.result['show_move']
+
         self._app.config.set('General', 'user_data', user_data)
         self._app.config.write()
         self._app.screen_manager.current = 'menu'
@@ -153,12 +158,18 @@ class ShowUserData(Screen):
         user_data = ast.literal_eval(App.get_running_app().config.get('General', 'user_data'))
     #     for f, d in sorted(data_foods.items(), key=lambda x: x[1]):
             # fd = f.decode('u8') + ' ' + (datetime.fromtimestamp(d).strftime('%Y-%m-%d'))
-        for f, d in user_data.items():
-            fd = f + ' = ' + d
-            print (fd)
-            data = {'viewclass': 'Button', 'text': fd}
-            if data not in self.ids.rv.data:
-                self.ids.rv.data.append({'viewclass': 'Button', 'text': fd})
+
+        # for f, d in user_data.items():
+        #     fd = f + ' = ' + d.decode('u8')
+        #     print (str(fd))
+        #     data = {'viewclass': 'Button', 'text': fd}
+        #     if data not in self.ids.rv.data:
+        #         self.ids.rv.data.append({'viewclass': 'Button', 'text': fd})
+        if 'user_id' in user_data:
+            self.ids.rv.data.append({'viewclass': 'Button', 'text': u'ID водителя '+ str(user_data['user_id'])})
+            self.ids.rv.data.append({'viewclass': 'Button', 'text': u'Организация '+ user_data['organization'].decode('u8')})
+            self.ids.rv.data.append({'viewclass': 'Button', 'text': u'Имя водителя '+ user_data['first_name'].decode('u8') + user_data['last_name'].decode('u8')})
+            self.ids.rv.data.append({'viewclass': 'Button', 'text': u'Телефон '+ user_data['driver_phone']})
 
 
 
