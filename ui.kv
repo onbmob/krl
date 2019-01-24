@@ -11,6 +11,12 @@
     ShowUserData:
         id: user_data
 
+    ShowRouteList:
+        id: route_list
+
+    ItemRouteList:
+        id: item_route_list
+
 #    AddFood:
 #        id: add_food
 
@@ -45,6 +51,12 @@
             size_hint_y: None
             height: dp(40)
 
+        Button:
+            text: "Список маршрутов"
+            on_release: app.screen_manager.current = 'route_list'
+            size_hint_y: None
+            height: dp(40)
+
         Label:
 #            text: 'My label'
 #            color: 255, 0, 255, 1
@@ -60,6 +72,8 @@
 
         Button:
             text: '< Выход'
+            background_color: (1,.5,1, 1)
+            color: (.5,1,.5, 1)
             on_press: app.screen_manager.current = 'menu'
             size_hint_y: None
             height: dp(40)
@@ -98,6 +112,8 @@
 
         Button:
             text: '< Выход'
+            background_color: (1,.5,1, 1)
+            color: (.5,1,.5, 1)
             on_press: app.screen_manager.current = 'menu'
             size_hint_y: None
             height: dp(40)
@@ -140,6 +156,8 @@
             on_press: app.screen_manager.current = 'menu'
             size_hint_y: None
             height: dp(40)
+            background_color: (1,.5,1, 1)
+            color: (.5,1,.5, 1)
 
         RecycleView:
             id: rv
@@ -154,34 +172,56 @@
                 orientation: 'vertical'
 
 
-#<AddFood>:
-#    name: "add_food"
-#    _app: app
-#
-#    BoxLayout:
-#        orientation: 'vertical'
-#        padding: 20
-#
-#        Button:
-#            text: '< Возврат'
-#            on_press: app.screen_manager.current = 'menu'
-#            size_hint_y: None
-#            height: dp(40)
-#        TextInput:
-#            id: field_food
-#            multiline: False
-#            height: dp(40)
-#            size_hint_y: None
-#            hint_text: "Название"
-#
-#        Button:
-#            text: "Добавить"
-#            size_hint_y: None
-#            height: dp(40)
-#            on_press:
-#                if field_food.text != '': root.button_clicked(field_food.text); \
-#                field_food.text = ''
-#
-#        Label:
-#            id: result_label
+<ShowRouteList>:
+    name: "route_list"
 
+    BoxLayout:
+        orientation: 'vertical'
+
+        Button:
+            text: '< Назад'
+            on_press: app.screen_manager.current = 'menu'
+            size_hint_y: None
+            height: dp(40)
+            background_color: (1,.5,1, 1)
+            color: (.5,1,.5, 1)
+
+        RecycleView:
+            id: rv
+            data: []
+            scroll_type: ['bars', 'content']
+            scroll_wheel_distance: dp(114)
+            bar_width: dp(10)
+            viewclass: 'ItemRouteList'
+
+            RecycleBoxLayout:
+                default_size: None, dp(400)
+                default_size_hint: 1, None
+                size_hint_y: None
+                pos: self.pos
+                height: self.minimum_height
+                orientation: 'vertical'
+                spacing: dp(2)
+
+
+<ItemRouteList>:
+    rname: ''
+    rid: ''
+    BoxLayout:
+        orientation: 'vertical'
+
+        canvas.before:
+            Color:
+                rgba: 0.5, 1, 1, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        Label:
+            text: root.rid
+            height: dp(40)
+            color: (1,0,0, 1)
+
+        Label:
+            text: root.rname
+            height: dp(40)

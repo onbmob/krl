@@ -4,6 +4,9 @@ import os
 import ast
 # import time
 # from datetime import datetime
+from random import sample
+from string import ascii_lowercase
+
 from kivy.app import App
 from kivy import PY2
 from kivy.properties import ObjectProperty
@@ -94,10 +97,7 @@ class EntryPincode(Screen):
                          method='POST',
                          req_headers={'User-Agent': 'Mozilla/5.0',
                                       'Content-Type': 'application/json'}
-                                      # 'Authorization': self._get_auth()}
-        # headers = {'Token': 'tArcrKZYxRTCWPvhTcdBqyydHZnxLCJB'}
                          )
-        # req.wait()
 
     def update_progress(self, request, current_size, total_size):
         self.ids['download_progress_bar'].value = current_size / total_size
@@ -123,7 +123,6 @@ class EntryPincode(Screen):
                    method='GET',
                    req_headers={'User-Agent': 'Mozilla/5.0',
                                 'Content-Type': 'application/json',
-                                # 'Authorization': 'Token',
                                 'Authorization': 'Token ' + user_data['token']}
                    )
 
@@ -151,13 +150,13 @@ class EntryPincode(Screen):
         self._app.config.write()
         self._app.screen_manager.current = 'menu'
 
+
 class ShowUserData(Screen):
 
     def on_enter(self):
-        
         user_data = ast.literal_eval(App.get_running_app().config.get('General', 'user_data'))
-    #     for f, d in sorted(data_foods.items(), key=lambda x: x[1]):
-            # fd = f.decode('u8') + ' ' + (datetime.fromtimestamp(d).strftime('%Y-%m-%d'))
+        #     for f, d in sorted(data_foods.items(), key=lambda x: x[1]):
+        # fd = f.decode('u8') + ' ' + (datetime.fromtimestamp(d).strftime('%Y-%m-%d'))
 
         # for f, d in user_data.items():
         #     fd = f + ' = ' + d.decode('u8')
@@ -165,12 +164,49 @@ class ShowUserData(Screen):
         #     data = {'viewclass': 'Button', 'text': fd}
         #     if data not in self.ids.rv.data:
         #         self.ids.rv.data.append({'viewclass': 'Button', 'text': fd})
+        self.ids.rv.data = []
         if 'user_id' in user_data:
-            self.ids.rv.data.append({'viewclass': 'Button', 'text': u'ID водителя '+ str(user_data['user_id'])})
-            self.ids.rv.data.append({'viewclass': 'Button', 'text': u'Организация '+ user_data['organization'].decode('u8')})
-            self.ids.rv.data.append({'viewclass': 'Button', 'text': u'Имя водителя '+ user_data['first_name'].decode('u8') + user_data['last_name'].decode('u8')})
-            self.ids.rv.data.append({'viewclass': 'Button', 'text': u'Телефон '+ user_data['driver_phone']})
+            self.ids.rv.data.append({'viewclass': 'Button', 'text': u'ID водителя ' + str(user_data['user_id'])})
+            self.ids.rv.data.append(
+                {'viewclass': 'Button', 'text': u'Организация ' + user_data['organization'].decode('u8')})
+            self.ids.rv.data.append({'viewclass': 'Button',
+                                     'text': u'Имя водителя ' + user_data['first_name'].decode('u8') + user_data[
+                                         'last_name'].decode('u8')})
+            self.ids.rv.data.append({'viewclass': 'Button', 'text': u'Телефон ' + user_data['driver_phone']})
 
+
+class ItemRouteList(Screen):
+        pass
+
+class ShowRouteList(Screen):
+    _app = ObjectProperty()
+
+    def on_enter(self):
+        user_data = ast.literal_eval(App.get_running_app().config.get('General', 'user_data'))
+        if 'token' in user_data:
+            UrlRequest('https://8move.com/api/routs/',
+                       on_success=self.got_json_act,
+                       on_error=self.error_json,
+                       on_failure=self.error_json,
+                       # on_progress=self.update_progress,
+                       method='GET',
+                       req_headers={'User-Agent': 'Mozilla/5.0',
+                                    'Content-Type': 'application/json',
+                                    'Authorization': 'Token ' + user_data['token']}
+                       )
+
+    def error_json(self, req, result):
+        print('error =', req.error)
+
+    def got_json_act(self, req, result):
+        print('routs result =', result)
+        print('routs error =', req.error)
+        routs =  req.result['routs']
+
+        self.ids.rv.data=[]
+        for item in routs:
+            print('routs id =', item['id'])
+            self.ids.rv.data.append({'rname': item['name'], 'rid': str(item['id'])})
 
 
 # class Pref():
@@ -192,7 +228,6 @@ class ShowUserData(Screen):
 #         self.data = ast.literal_eval(App.get_running_app().config.get('General', 'user_data'))
 
 class RouteListApp(App):
-
 
     def __init__(self, **kvargs):
         super(RouteListApp, self).__init__(**kvargs)
@@ -218,30 +253,6 @@ class RouteListApp(App):
     def build(self):
         # self.pref = Pref()
         return self.screen_manager
-
-
-# class AddFood(Screen):
-#     _app = ObjectProperty()
-#
-#     def set_user_data(self, input_food):
-#         self._app.user_data = ast.literal_eval(self._app.config.get('General', 'user_data'))
-#         self._app.user_data[input_food.encode('u8')] = int(time.time())
-#
-#     def save_user_data(self):
-#         self._app.config.set('General', 'user_data', self._app.user_data)
-#         self._app.config.write()
-#
-#     def set_new_food(self, name_food):
-#         if not PY2:
-        # self.ids.result_label.text = "Последнее добавленное:  " + name_food
-        # else:
-        #     self.ids.result_label.text = \
-        #         u"Последнее добавленное:  " + name_food
-    #
-    # def button_clicked(self, input_food):
-    #     self.set_user_data(input_food)
-    #     self.save_user_data()
-    #     self.set_new_food(input_food)
 
 if __name__ == '__main__':
     RouteListApp().run()

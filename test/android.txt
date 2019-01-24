@@ -1,0 +1,3 @@
+title=8move
+author=ONB
+orientation=portrait
